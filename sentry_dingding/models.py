@@ -14,8 +14,6 @@ import sentry_dingding
 class DingDingOptionsForm(forms.Form):
     endpoint = forms.CharField(help_text="DingDing Endpoint", required=True,
                                widget=forms.TextInput(attrs={'placeholder': 'dingding endpoint'}))
-    at_all = forms.BooleanField(help_text="@all", required=False,
-                                widget=forms.TextInput(attrs={'placeholder': '@all?'}))
 
 
 class DingDingMessage(NotifyPlugin):
@@ -41,19 +39,23 @@ class DingDingMessage(NotifyPlugin):
         level = group.get_level_display().upper()
         link = group.get_absolute_url()
         endpoint = self.get_option('endpoint', project)
-        at_all = bool(self.get_option('at_all', project))
         data = {
-            "msgtype": "markdown",
-            "markdown": {
-                "title": "{level}".format(level=level),
-                "text": "#### {project_name}\n".format(project_name=project.name) +
-                        "{message}\n".format(message=event.error()) +
-                        "> [view]({link}) \n".format(link=link)
+            "actionCard": {
+                "title": level,
+                "text": '''project_name: {project_name}
+server_name: {server_name}
+{exception}
+'''.format(
+                    project_name=project,
+                    server_name=event.get_tag('server_name'),
+                    exception=event.get_interfaces()['sentry.interfaces.Exception'].to_string(event),
+                ),
+                "hideAvatar": "1",
+                "btnOrientation": "0",
+                "singleTitle": "View",
+                "singleURL": link,
             },
-            "at": {
-                "atMobiles": [],
-                "isAtAll": at_all
-            }
+            "msgtype": "actionCard"
         }
         self.send_payload(
             endpoint=endpoint,
