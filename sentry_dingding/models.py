@@ -39,23 +39,30 @@ class DingDingMessage(NotifyPlugin):
         level = group.get_level_display().upper()
         link = group.get_absolute_url()
         endpoint = self.get_option('endpoint', project)
+        server_name = event.get_tag('server_name')
+        try:
+            exception = event.get_interfaces()['sentry.interfaces.Exception'].to_string(event)
+            msg = exception.replace('  ', '&emsp;').replace('\n', '</br>')
+        except KeyError:
+            msg = event.error()
         data = {
-            "actionCard": {
-                "title": level,
-                "text": '''project_name: {project_name}
-server_name: {server_name}
-{exception}
-'''.format(
+            "msgtype": "markdown",
+            "markdown": {
+                "title": '{project_name}:{level}'.format(
                     project_name=project,
-                    server_name=event.get_tag('server_name'),
-                    exception=event.get_interfaces()['sentry.interfaces.Exception'].to_string(event),
+                    level=level,
                 ),
-                "hideAvatar": "1",
-                "btnOrientation": "0",
-                "singleTitle": "View",
-                "singleURL": link,
+                "text": '''## {project_name}@{server_name}:{level}
+{msg}
+> [view]({link})
+                '''.format(
+                    project_name=project,
+                    level=level,
+                    msg=msg,
+                    server_name=server_name,
+                    link=link,
+                ),
             },
-            "msgtype": "actionCard"
         }
         self.send_payload(
             endpoint=endpoint,
