@@ -4,7 +4,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 """
 sentry_dingding.models
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 :copyright: (c) 2011 by Linovia, see AUTHORS for more details.
 :license: BSD, see LICENSE for more details.
@@ -55,8 +55,10 @@ class DingDingMessage(NotifyPlugin):
                     level=level,
                 ),
                 "text": '''## {project_name}@{server_name}
-### {level}: {msg}
-
+## Level: {level}
+```
+ {msg}
+```
 [[ Read more ]]({link})
                 '''.format(
                     project_name=project,
