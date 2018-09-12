@@ -4,7 +4,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 """
 sentry_dingding.models
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 :copyright: (c) 2011 by Linovia, see AUTHORS for more details.
 :license: BSD, see LICENSE for more details.
@@ -42,34 +42,29 @@ class DingDingMessage(NotifyPlugin):
         project = group.project.name
         level = group.get_level_display().upper()
         link = group.get_absolute_url()
-        endpoint = self.get_option('endpoint', project)
+        endpoint = self.get_option('endpoint', event.project)
         server_name = event.get_tag('server_name')
         msg = event.get_legacy_message()
         if not msg:
             msg = event.error()
         data = {
-            "msgtype": "actionCard",
-            "actionCard": {
+            "msgtype": "markdown",
+            "markdown": {
                 "title": '{project_name}:{level}'.format(
                     project_name=project,
                     level=level,
                 ),
-                "text": '''## {project_name}@{server_name}:{level}
-{msg}
+                "text": '''## {project_name}@{server_name}
+### {level}: {msg}
+
+[[ Read more ]]({link})
                 '''.format(
                     project_name=project,
                     level=level,
                     msg=msg,
                     server_name=server_name,
+                    link=link
                 ),
-                "hideAvatar": "0",
-                "btnOrientation": "0",
-                "btns": [
-                    {
-                        "title": "Read more",
-                        "actionURL": link
-                    }
-                ]
             },
         }
         self.send_payload(
