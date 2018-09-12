@@ -1,3 +1,4 @@
+# -- coding: UTF-8 --
 """
 sentry_dingding.models
 ~~~~~~~~~~~~~~~~~~~~~
@@ -46,22 +47,28 @@ class DingDingMessage(NotifyPlugin):
         except KeyError:
             msg = event.error()
         data = {
-            "msgtype": "markdown",
-            "markdown": {
+            "msgtype": "actionCard",
+            "actionCard": {
                 "title": '{project_name}:{level}'.format(
                     project_name=project,
                     level=level,
                 ),
                 "text": '''## {project_name}@{server_name}:{level}
 {msg}
-> [view]({link})
                 '''.format(
                     project_name=project,
                     level=level,
                     msg=msg,
                     server_name=server_name,
-                    link=link,
                 ),
+                "hideAvatar": "0",
+                "btnOrientation": "0",
+                "btns": [
+                    {
+                        "title": "查看详情",
+                        "actionURL": link
+                    }
+                ]
             },
         }
         self.send_payload(
