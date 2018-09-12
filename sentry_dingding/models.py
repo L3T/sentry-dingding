@@ -55,10 +55,10 @@ class DingDingMessage(NotifyPlugin):
                     level=level,
                 ),
                 "text": '''## {project_name}@{server_name}
-## Level: {level}
-```
- {msg}
-```
+## LEVEL: {level}
+
+{msg:.100}
+
 [[ Read more ]]({link})
                 '''.format(
                     project_name=project,
