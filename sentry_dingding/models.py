@@ -39,15 +39,13 @@ class DingDingMessage(NotifyPlugin):
         return bool(self.get_option('endpoint', project))
 
     def notify_users(self, group, event, fail_silently=False):
-        project = event.project
+        project = group.project.name
         level = group.get_level_display().upper()
         link = group.get_absolute_url()
         endpoint = self.get_option('endpoint', project)
         server_name = event.get_tag('server_name')
-        try:
-            exception = event.get_interfaces()['sentry.interfaces.Exception'].to_string(event)
-            msg = exception.replace('  ', '&emsp;')
-        except KeyError:
+        msg = event.get_legacy_message()
+        if not msg:
             msg = event.error()
         data = {
             "msgtype": "actionCard",
