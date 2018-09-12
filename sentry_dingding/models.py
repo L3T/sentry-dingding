@@ -46,7 +46,7 @@ class DingDingMessage(NotifyPlugin):
         server_name = event.get_tag('server_name')
         try:
             exception = event.get_interfaces()['sentry.interfaces.Exception'].to_string(event)
-            msg = exception.replace('  ', '&emsp;').replace('\n', '</br>')
+            msg = exception.replace('  ', '&emsp;')
         except KeyError:
             msg = event.error()
         data = {
@@ -68,7 +68,7 @@ class DingDingMessage(NotifyPlugin):
                 "btnOrientation": "0",
                 "btns": [
                     {
-                        "title": "查看详情",
+                        "title": "Read more",
                         "actionURL": link
                     }
                 ]
