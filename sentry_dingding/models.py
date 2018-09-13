@@ -5,6 +5,8 @@ sentry_dingding.models
 :copyright: (c) 2011 by Linovia, see AUTHORS for more details.
 :license: BSD, see LICENSE for more details.
 """
+from __future__ import unicode_literals
+
 import requests
 from django import forms
 from sentry.plugins.bases.notify import NotifyPlugin
