@@ -38,7 +38,8 @@ class DingDingMessage(NotifyPlugin):
     def is_configured(self, project):
         return bool(self.get_option('endpoint', project))
 
-    def notify_users(self, group, event, fail_silently=False):
+    def notify_users(self, group, event, triggering_rules,
+                     fail_silently=False, **kwargs):
         project = group.project.name
         level = group.get_level_display().upper()
         link = group.get_absolute_url()
