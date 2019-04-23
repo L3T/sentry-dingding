@@ -14,7 +14,7 @@ install_requires = [
 
 setup(
     name='sentry-dingding',
-    version='0.1.2',
+    version='0.1.4',
     author='Zhang Yunyu',
     author_email='leanderztj@gmail.com',
     url='https://github.com/L3T/sentry-dingding',
