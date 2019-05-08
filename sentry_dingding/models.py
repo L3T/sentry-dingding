@@ -1,6 +1,10 @@
+# -*- coding: UTF-8 -*-
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
 """
 sentry_dingding.models
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 :copyright: (c) 2011 by Linovia, see AUTHORS for more details.
 :license: BSD, see LICENSE for more details.
@@ -34,16 +38,15 @@ class DingDingMessage(NotifyPlugin):
     def is_configured(self, project):
         return bool(self.get_option('endpoint', project))
 
-    def notify_users(self, group, event, fail_silently=False):
-        project = event.project
+    def notify_users(self, group, event, triggering_rules,
+                     fail_silently=False, **kwargs):
+        project = group.project.name
         level = group.get_level_display().upper()
         link = group.get_absolute_url()
-        endpoint = self.get_option('endpoint', project)
+        endpoint = self.get_option('endpoint', event.project)
         server_name = event.get_tag('server_name')
-        try:
-            exception = event.get_interfaces()['sentry.interfaces.Exception'].to_string(event)
-            msg = exception.replace('  ', '&emsp;').replace('\n', '</br>')
-        except KeyError:
+        msg = event.get_legacy_message()
+        if not msg:
             msg = event.error()
         data = {
             "msgtype": "markdown",
@@ -52,15 +55,18 @@ class DingDingMessage(NotifyPlugin):
                     project_name=project,
                     level=level,
                 ),
-                "text": '''## {project_name}@{server_name}:{level}
-{msg}
-> [view]({link})
+                "text": '''## {project_name}@{server_name}
+## LEVEL: {level}
+
+{msg:.100}
+
+[[ Read more ]]({link})
                 '''.format(
                     project_name=project,
                     level=level,
                     msg=msg,
                     server_name=server_name,
-                    link=link,
+                    link=link
                 ),
             },
         }
